@@ -23,7 +23,7 @@ Copy-Item .env.local.example .env.local
 
 Edit `.env.local` and set a unique `JWT_SECRET` (at least 32 characters), `ADMIN_EMAIL`, and a strong `ADMIN_PASSWORD`. For a local demo without Razorpay credentials, set `PAYMENT_DEMO_MODE=true`. Demo UPI/card transactions are simulations and do not charge money.
 
-Create a Neon PostgreSQL database and copy its pooled connection string into `DATABASE_URL` and its direct connection string into `DIRECT_URL` in `.env.local`. Keep both URLs secret. Then initialize the database and start the app:
+Create a Neon PostgreSQL database and copy its pooled connection string into `DATABASE_URL` and its direct connection string into `PRISMA_DATABASE_URL` in `.env.local`. Keep both URLs secret. Then initialize the database and start the app:
 
 ```powershell
 npm run db:generate
@@ -61,7 +61,7 @@ Import this repository into Vercel with the project root set to the directory co
 Create a Neon PostgreSQL database. In Vercel's project settings, add these environment variables for Production and Preview as appropriate:
 
 - `DATABASE_URL`: Neon pooled connection string
-- `DIRECT_URL`: Neon direct connection string, used by Prisma migrations
+- `PRISMA_DATABASE_URL`: Neon direct connection string, used by Prisma migrations
 - `JWT_SECRET`: a unique random secret with at least 32 characters
 - `ADMIN_EMAIL` and `ADMIN_PASSWORD`: credentials for the admin account
 - For live UPI/card payments, set `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, and `NEXT_PUBLIC_RAZORPAY_KEY_ID`
