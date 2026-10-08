@@ -66,7 +66,7 @@ function ProductListing() {
           {catalog.products.length === 0 ? (
             <div className="rounded-2xl border border-dashed border-[#d9d9d0] bg-white/60 px-6 py-14 text-center">
               <h2 className="font-serif text-2xl text-[#30372f]">{catalog.totalCount === 0 && !hasFilters ? "The shelves are getting ready." : "No products found."}</h2>
-              <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-[#777c74]">{catalog.totalCount === 0 && !hasFilters ? "Add products to your SQLite catalogue to start showing your collection." : "Try a different search or adjust your filters to find what you’re looking for."}</p>
+              <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-[#777c74]">{catalog.totalCount === 0 && !hasFilters ? "Add products to your catalogue to start showing your collection." : "Try a different search or adjust your filters to find what you’re looking for."}</p>
             </div>
           ) : (
             <>

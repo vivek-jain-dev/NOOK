@@ -1,6 +1,8 @@
+import { connection } from "next/server";
 import { getProductCatalog, parseProductFilters } from "../../../lib/products";
 
 export async function GET(request) {
+  await connection();
   const searchParams = new URL(request.url).searchParams;
   const result = parseProductFilters(searchParams);
 

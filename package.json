@@ -9,6 +9,7 @@
         "lint": "eslint",
         "seed": "node --env-file=.env.local scripts/seed-products.mjs",
         "db:migrate": "node --env-file=.env.local ./node_modules/prisma/build/index.js migrate dev",
+        "db:deploy": "node --env-file=.env.local ./node_modules/prisma/build/index.js migrate deploy",
         "db:generate": "node --env-file=.env.local ./node_modules/prisma/build/index.js generate",
         "db:validate": "node --env-file=.env.local ./node_modules/prisma/build/index.js validate"
     },

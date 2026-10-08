@@ -1,6 +1,8 @@
+import { connection } from "next/server";
 import { getProductById } from "../../../../lib/products";
 
 export async function GET(_request, { params }) {
+  await connection();
   const { id } = await params;
 
   if (typeof id !== "string" || id.length > 30) {

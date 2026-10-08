@@ -1,7 +1,9 @@
+import { connection } from "next/server";
 import prisma from "../../../../lib/prisma";
 import { hasAdminSession } from "../../../../lib/admin-auth";
 
 export async function GET(request) {
+  await connection();
   if (!(await hasAdminSession(request))) {
     return Response.json(
       { success: false, error: "Admin access is required." },

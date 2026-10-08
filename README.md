@@ -1,6 +1,6 @@
 # Nook & Co.
 
-A responsive home-and-lifestyle storefront built with Next.js, React, Prisma, and SQLite.
+A responsive home-and-lifestyle storefront built with Next.js, React, Prisma, and Neon PostgreSQL.
 
 ## Features
 
@@ -10,7 +10,7 @@ A responsive home-and-lifestyle storefront built with Next.js, React, Prisma, an
 - Checkout with delivery details and Cash on Delivery
 - Optional Razorpay checkout for UPI and card payments; local demo mode is available for presentations and does not charge money
 - Admin sign-in and dashboard for viewing orders and registered customers
-- SQLite persistence for products, customer accounts, orders, and order items
+- PostgreSQL persistence for products, customer accounts, orders, and order items
 
 ## Run locally
 
@@ -23,7 +23,7 @@ Copy-Item .env.local.example .env.local
 
 Edit `.env.local` and set a unique `JWT_SECRET` (at least 32 characters), `ADMIN_EMAIL`, and a strong `ADMIN_PASSWORD`. For a local demo without Razorpay credentials, set `PAYMENT_DEMO_MODE=true`. Demo UPI/card transactions are simulations and do not charge money.
 
-Then initialize the database and start the app:
+Create a Neon PostgreSQL database and copy its pooled connection string into `DATABASE_URL` and its direct connection string into `DIRECT_URL` in `.env.local`. Keep both URLs secret. Then initialize the database and start the app:
 
 ```powershell
 npm run db:generate
@@ -32,7 +32,7 @@ npm run seed
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000). The default SQLite file is `prisma/dev.db`. Seed data can be refreshed by running `npm run seed` again.
+Open [http://localhost:3000](http://localhost:3000). Seed data can be refreshed by running `npm run seed` again.
 
 ## Payments
 
@@ -48,6 +48,7 @@ Use the `ADMIN_EMAIL` and `ADMIN_PASSWORD` configured in `.env.local` to sign in
 npm run db:validate
 npm run db:generate
 npm run db:migrate
+npm run db:deploy
 npm run seed
 npm run lint
 npm run build
@@ -57,14 +58,15 @@ npm run build
 
 Import this repository into Vercel with the project root set to the directory containing this `package.json`. The build command explicitly regenerates Prisma Client before Next.js builds, which avoids stale cached Prisma Client output.
 
-Configure these environment variables in Vercel before deploying:
+Create a Neon PostgreSQL database. In Vercel's project settings, add these environment variables for Production and Preview as appropriate:
 
-- `DATABASE_URL`: a reachable database connection string
+- `DATABASE_URL`: Neon pooled connection string
+- `DIRECT_URL`: Neon direct connection string, used by Prisma migrations
 - `JWT_SECRET`: a unique random secret with at least 32 characters
 - `ADMIN_EMAIL` and `ADMIN_PASSWORD`: credentials for the admin account
 - For live UPI/card payments, set `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, and `NEXT_PUBLIC_RAZORPAY_KEY_ID`
 
-Vercel's serverless filesystem is not persistent, so the local SQLite database file is not suitable for production data. Use a hosted database with a Prisma-supported provider for deployed accounts, products, and orders; applying this repository's SQLite migrations requires adapting the schema and migrations to the selected provider. Cash on Delivery does not require payment gateway credentials.
+After setting the database connection strings in `.env.local`, run `npm run db:deploy` and `npm run seed` from a trusted local terminal to create the Neon tables and demo catalog. The Neon database starts empty; existing records in a local SQLite database are not copied automatically. Redeploy after configuring Vercel's environment variables. Cash on Delivery does not require payment gateway credentials.
 
 ## Project structure
 
@@ -72,10 +74,6 @@ Vercel's serverless filesystem is not persistent, so the local SQLite database f
 app/          Storefront pages and API routes
 components/   Shared storefront, cart, wishlist, and product UI
 lib/          Database access, authentication, cart, and product helpers
-prisma/       SQLite schema and migration history
+prisma/       PostgreSQL schema and migration history
 scripts/      Product seed script
 ```
-
-## Deployment
-
-The SQLite database in this repository is intended for local development and demos. A local SQLite file is not a suitable persistent/shared database for typical serverless production hosting. Choose a persistent database and configure its Prisma provider and deployment environment before deploying for real customers.

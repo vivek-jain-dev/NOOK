@@ -1,6 +1,8 @@
+import { connection } from "next/server";
 import prisma from "../../../lib/prisma";
 
 export async function GET(request) {
+  await connection();
   const slug = new URL(request.url).searchParams.get("slug");
 
   if (slug && !/^[a-z0-9]+(?:-[a-z0-9]+)*$/i.test(slug)) {
