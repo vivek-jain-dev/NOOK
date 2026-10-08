@@ -1,36 +1,68 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Nook & Co.
 
-## Getting Started
+A responsive home-and-lifestyle storefront built with Next.js, React, Prisma, and SQLite.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- Responsive storefront, product search, category/brand/price/rating filters, sorting, and product details
+- Customer registration and sign-in with securely hashed passwords
+- Persistent wishlist and browser-based shopping bag
+- Checkout with delivery details and Cash on Delivery
+- Optional Razorpay checkout for UPI and card payments; local demo mode is available for presentations and does not charge money
+- Admin sign-in and dashboard for viewing orders and registered customers
+- SQLite persistence for products, customer accounts, orders, and order items
+
+## Run locally
+
+Use Node.js 20.9 or newer. From the project directory:
+
+```powershell
+npm install
+Copy-Item .env.local.example .env.local
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Edit `.env.local` and set a unique `JWT_SECRET` (at least 32 characters), `ADMIN_EMAIL`, and a strong `ADMIN_PASSWORD`. For a local demo without Razorpay credentials, set `PAYMENT_DEMO_MODE=true`. Demo UPI/card transactions are simulations and do not charge money.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+Then initialize the database and start the app:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```powershell
+npm run db:generate
+npm run db:migrate
+npm run seed
+npm run dev
+```
 
-## Learn More
+Open [http://localhost:3000](http://localhost:3000). The default SQLite file is `prisma/dev.db`. Seed data can be refreshed by running `npm run seed` again.
 
-To learn more about Next.js, take a look at the following resources:
+## Payments
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Cash on Delivery is available without a payment provider. To accept real UPI or card payments, configure valid server-side `RAZORPAY_KEY_ID` and `RAZORPAY_KEY_SECRET` values, plus the matching `NEXT_PUBLIC_RAZORPAY_KEY_ID`, and set `PAYMENT_DEMO_MODE=false`. Never commit payment keys or `.env.local`.
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Admin
 
-## Deploy on Vercel
+Use the `ADMIN_EMAIL` and `ADMIN_PASSWORD` configured in `.env.local` to sign in at `/admin`. Admin credentials are not committed to the repository.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## Useful commands
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+npm run db:validate
+npm run db:generate
+npm run db:migrate
+npm run seed
+npm run lint
+npm run build
+```
+
+## Project structure
+
+```text
+app/          Storefront pages and API routes
+components/   Shared storefront, cart, wishlist, and product UI
+lib/          Database access, authentication, cart, and product helpers
+prisma/       SQLite schema and migration history
+scripts/      Product seed script
+```
+
+## Deployment
+
+The SQLite database in this repository is intended for local development and demos. A local SQLite file is not a suitable persistent/shared database for typical serverless production hosting. Choose a persistent database and configure its Prisma provider and deployment environment before deploying for real customers.

@@ -1,0 +1,93 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Category {
+  id          String    @id @default(cuid())
+  name        String
+  slug        String    @unique
+  description String    @default("")
+  isActive    Boolean   @default(true)
+  products    Product[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@index([name])
+}
+
+model Product {
+  id          String   @id @default(cuid())
+  name        String
+  description String
+  price       Float
+  salePrice   Float
+  categoryId  String
+  category    Category @relation(fields: [categoryId], references: [id])
+  brand       String
+  images      String   @default("[]")
+  stock       Int      @default(0)
+  sku         String   @unique
+  rating      Float    @default(0)
+  reviewCount Int      @default(0)
+  isFeatured  Boolean  @default(false)
+  isActive    Boolean  @default(true)
+  orderItems  OrderItem[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([name])
+  @@index([categoryId])
+  @@index([brand])
+  @@index([rating])
+  @@index([createdAt])
+}
+
+model CustomerAccount {
+  id           String   @id @default(cuid())
+  name         String
+  email        String   @unique
+  passwordHash String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+  orders       CustomerOrder[]
+
+  @@index([createdAt])
+}
+
+model CustomerOrder {
+  id          String      @id @default(cuid())
+  accountId   String
+  account     CustomerAccount @relation(fields: [accountId], references: [id], onDelete: Restrict)
+  status      String      @default("PLACED")
+  paymentMethod String    @default("COD")
+  paymentStatus String    @default("COD_PENDING")
+  gatewayOrderId String?  @unique
+  gatewayPaymentId String? @unique
+  phone       String
+  address     String
+  total       Float
+  items       OrderItem[]
+  createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @updatedAt
+
+  @@index([accountId, createdAt])
+}
+
+model OrderItem {
+  id        String        @id @default(cuid())
+  orderId   String
+  order     CustomerOrder @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  productId String
+  product   Product       @relation(fields: [productId], references: [id], onDelete: Restrict)
+  name      String
+  sku       String
+  unitPrice Float
+  quantity  Int
+
+  @@index([orderId])
+}
