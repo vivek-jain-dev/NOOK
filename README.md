@@ -53,6 +53,19 @@ npm run lint
 npm run build
 ```
 
+## Deploy to Vercel
+
+Import this repository into Vercel with the project root set to the directory containing this `package.json`. The build command explicitly regenerates Prisma Client before Next.js builds, which avoids stale cached Prisma Client output.
+
+Configure these environment variables in Vercel before deploying:
+
+- `DATABASE_URL`: a reachable database connection string
+- `JWT_SECRET`: a unique random secret with at least 32 characters
+- `ADMIN_EMAIL` and `ADMIN_PASSWORD`: credentials for the admin account
+- For live UPI/card payments, set `RAZORPAY_KEY_ID`, `RAZORPAY_KEY_SECRET`, and `NEXT_PUBLIC_RAZORPAY_KEY_ID`
+
+Vercel's serverless filesystem is not persistent, so the local SQLite database file is not suitable for production data. Use a hosted database with a Prisma-supported provider for deployed accounts, products, and orders; applying this repository's SQLite migrations requires adapting the schema and migrations to the selected provider. Cash on Delivery does not require payment gateway credentials.
+
 ## Project structure
 
 ```text
